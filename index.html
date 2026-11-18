@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>Versuchsdatenbank Kursstufe Chemie · Kohlenhydrate &amp; Proteine</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="data/kh_nachweise.js"></script>
+  <script defer src="data/proteine_nachweise.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="brand-group">
+        <div class="logo-pair">
+          <img src="assets/birklehof_logo.png" alt="Logo Schule Birklehof" width="44" height="44" class="brand-logo">
+          <img src="assets/mint_logo.png" alt="MINT-Logo" width="44" height="44" class="brand-logo brand-logo-mint">
+        </div>
+        <div class="title-block">
+          <h1>Versuchsdatenbank Kursstufe Chemie</h1>
+          <p class="subtitle">Nachweisreaktionen für Kohlenhydrate &amp; Proteine (BF &amp; LF)</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="mode-switch" role="group" aria-label="Nutzungsmodus wählen">
+          <button id="mode-catalog-btn" type="button" class="mode-btn is-active" aria-pressed="true">Datenbank</button>
+          <button id="mode-path-btn" type="button" class="mode-btn" aria-pressed="false">Lernpfad</button>
+        </div>
+        <button id="lf-toggle-btn" type="button" class="lf-toggle-btn" aria-expanded="false">
+          LF-Vertiefungen: Eingeklappt (BF)
+        </button>
+        <button id="theme-toggle-btn" type="button" class="ghost-btn theme-btn" aria-label="Farbschema umschalten">
+          🌗 Design
+        </button>
+      </div>
+    </header>
+
+    <section id="catalog-controls" class="catalog-shell" aria-label="Versuchskatalog und Filter">
+      <div class="filter-bar">
+        <label class="search-field" for="search-input">
+          <span class="sr-only">Versuche durchsuchen</span>
+          <input id="search-input" type="search" placeholder="Suche nach Nachweis, Stoff oder #Tag (z. B. Silber, #Redox)…" autocomplete="off">
+        </label>
+        <div id="category-chips" class="chip-row" role="group" aria-label="Themen- und Schlagwortfilter"></div>
+      </div>
+      <div id="experiment-grid" class="experiment-grid" role="list" aria-label="Verfügbare Versuche"></div>
+    </section>
+
+    <main id="lab-workspace" class="workspace-shell">
+      <div class="split-layout">
+        <section id="lab-panel" class="panel lab-panel" aria-label="Interaktiver Versuchsstand">
+          <header id="experiment-header" class="experiment-header">
+            <h2 id="experiment-title">Versuch wird geladen…</h2>
+          </header>
+
+          <div class="control-block">
+            <span class="control-label">1. Probe wählen</span>
+            <div id="sample-buttons" class="sample-grid" role="group" aria-label="Probenauswahl"></div>
+          </div>
+
+          <div class="control-block">
+            <span class="control-label">2. Durchführung</span>
+            <div class="action-row">
+              <button id="reagent-btn" type="button" class="primary-btn">Reagenz zugeben</button>
+              <button id="reset-btn" type="button" class="ghost-btn">Neuer Ansatz</button>
+            </div>
+            <div id="temp-control-container" class="temp-control"></div>
+          </div>
+
+          <div id="vessel-stage" class="vessel-stage"></div>
+          <p id="lab-observation" class="observation-banner" aria-live="polite"></p>
+        </section>
+
+        <section id="theory-panel" class="panel theory-panel" aria-label="Theorie und Teilchenebene">
+          <div id="summary-card" class="summary-card"></div>
+          <div id="particle-stage" class="particle-stage"></div>
+          <div id="lf-container" class="lf-container"></div>
+        </section>
+      </div>
+    </main>
+
+    <footer id="learning-path-footer" class="path-footer" hidden>
+      <div class="path-progress">
+        <span id="path-progress-text">Versuch 1 von 6</span>
+        <progress id="path-progress-bar" max="6" value="1"></progress>
+      </div>
+      <div class="path-actions">
+        <button id="mark-done-btn" type="button" class="secondary-btn">Als erprobt markieren</button>
+        <button id="prev-exp-btn" type="button" class="ghost-btn">← Vorheriger</button>
+        <button id="next-exp-btn" type="button" class="primary-btn">Nächster →</button>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
