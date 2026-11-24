@@ -66,7 +66,7 @@
     level: "BF + LF",
     learningPathOrder: 5,
     summaryCard: {
-      target: "Freie α-Aminosäuren (freie −NH₂- & α-COOH-Gruppe; kurze Peptide schwach, Proteine negativ)",
+      target: "Freie α-Aminosäuren (freie α-NH₂- & α-COOH-Gruppe am selben C-Atom; Peptide, Polypeptide & Proteine negativ)",
       reagent: "Ninhydrin-Lösung + Wasserbad (80 °C)",
       positiveSignal: "Intensive blauviolette Färbung durch den Farbstoff Ruhemanns Purpur"
     },
@@ -117,11 +117,12 @@
         }
         if (sampleId === "dipeptid") {
           return makeOutcome({
-            statusBadge: "positive",
-            liquidColor: "#6d489c",
-            opacity: 0.78,
-            observationShort: "Beobachtung: Schwächere blauviolette Färbung am freien Kettenende (kurzes Peptid).",
-            particleModelKey: "positive"
+            statusBadge: "negative",
+            liquidColor: "#edf2f7",
+            opacity: 0.42,
+            observationShort:
+              "Beobachtung: Keine blauviolette Färbung bei Dipeptid/kurzen Peptiden (Peptidbindung blockiert die α-Carboxygruppe am N-Terminus → keine Decarboxylierung).",
+            particleModelKey: "negative"
           });
         }
         if (sampleId === "protein") {
@@ -130,7 +131,7 @@
             liquidColor: "#edf2f7",
             opacity: 0.55,
             observationShort:
-              "Beobachtung: Keine blauviolette Färbung bei Protein/Albumin (Aminogruppen in Peptidbindungen gebunden; ggf. leichte Trübung durch Hitzedenaturierung).",
+              "Beobachtung: Keine blauviolette Färbung bei Polypeptiden/Proteinen (Aminogruppen in Peptidbindungen gebunden, fehlende freie α-Carboxygruppe am N-Terminus; ggf. leichte Trübung durch Hitzedenaturierung).",
             particleModelKey: "negative"
           });
         }
@@ -152,15 +153,26 @@
       ],
       renderSvg(sampleId, state) {
         const ready = Boolean(state && state.reagentAdded && state.heated);
+        if (sampleId === "dipeptid") {
+          return `<svg viewBox="0 0 360 175" class="particle-svg" role="img" aria-label="Negativer Ninhydrin-Nachweis bei Dipeptid Gly-Ala">
+            <rect x="4" y="4" width="352" height="167" rx="12" fill="none" stroke="currentColor" stroke-opacity="0.14"/>
+            <text x="18" y="24" font-size="11.5" font-weight="700" fill="currentColor">Dipeptid (Gly-Ala): α-COOH in Peptidbindung gebunden</text>
+            <rect x="18" y="54" width="224" height="44" rx="10" fill="#f1f5f9" stroke="#64748b" stroke-width="1.8"/>
+            <text x="130" y="80" text-anchor="middle" font-size="11" font-weight="700" fill="#1e293b">H₂N–CH(R¹)–CO–NH–CH(R²)–COOH</text>
+            <text x="298" y="82" text-anchor="middle" font-size="15" font-weight="800" fill="#dc2626">✕ blockiert</text>
+            <text x="180" y="132" text-anchor="middle" font-size="11" font-weight="700" fill="#dc2626">Keine freie α-COOH am N-Terminus → kein Ruhemanns Purpur</text>
+            <text x="180" y="152" text-anchor="middle" font-size="10.5" fill="currentColor">Auch kurze Peptidketten reagieren im Ninhydrin-Test negativ</text>
+          </svg>`;
+        }
         if (sampleId === "protein") {
           return `<svg viewBox="0 0 360 175" class="particle-svg" role="img" aria-label="Negativer Ninhydrin-Nachweis bei Protein Albumin">
             <rect x="4" y="4" width="352" height="167" rx="12" fill="none" stroke="currentColor" stroke-opacity="0.14"/>
-            <text x="18" y="24" font-size="11.5" font-weight="700" fill="currentColor">Protein (Albumin): N-Atome in Peptidbindungen gebunden</text>
+            <text x="18" y="24" font-size="11.5" font-weight="700" fill="currentColor">Polypeptid / Protein (Albumin): N-Atome in Peptidbindungen gebunden</text>
             <rect x="24" y="54" width="214" height="44" rx="10" fill="#f1f5f9" stroke="#64748b" stroke-width="1.8"/>
             <text x="131" y="80" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1e293b">…–CO–NH–CH(R)–CO–NH–…</text>
             <text x="292" y="82" text-anchor="middle" font-size="15" font-weight="800" fill="#dc2626">✕ blockiert</text>
             <text x="180" y="132" text-anchor="middle" font-size="11" font-weight="700" fill="#dc2626">Peptidbindungen + fehlende freie α-COOH → kein Ruhemanns Purpur</text>
-            <text x="180" y="152" text-anchor="middle" font-size="10.5" fill="currentColor">Kaum freie Kettenenden pro Makromolekül (Protein-Nachweis: Biuret!)</text>
+            <text x="180" y="152" text-anchor="middle" font-size="10.5" fill="currentColor">Erst nach Hydrolyse zu freien Aminosäuren positiv (Protein-Nachweis: Biuret!)</text>
           </svg>`;
         }
         if (sampleId === "wasser") {
@@ -170,13 +182,10 @@
             <text x="180" y="106" text-anchor="middle" font-size="11.5" fill="currentColor">Ninhydrin findet keinen Reaktionspartner → farblos</text>
           </svg>`;
         }
-        const labelMap = {
-          glycin: "Freie α-Aminosäure (α-NH₂ + α-COOH frei)",
-          dipeptid: "Dipeptid (freier N-Terminus −NH₂ am Kettenende)"
-        };
+        const label = "Freie α-Aminosäure (α-NH₂ + α-COOH frei)";
         return `<svg viewBox="0 0 360 175" class="particle-svg" role="img" aria-label="Bildung von Ruhemanns Purpur">
           <rect x="4" y="4" width="352" height="167" rx="12" fill="none" stroke="currentColor" stroke-opacity="0.14"/>
-          <text x="18" y="24" font-size="11.5" font-weight="700" fill="currentColor">${labelMap[sampleId]}</text>
+          <text x="18" y="24" font-size="11.5" font-weight="700" fill="currentColor">${label}</text>
           <rect x="20" y="54" width="84" height="44" rx="8" fill="#f1f5f9" stroke="#64748b" stroke-width="1.8"/>
           <text x="62" y="80" text-anchor="middle" font-size="11" font-weight="700" fill="#1e293b">Ninhydrin</text>
           <circle cx="130" cy="76" r="18" fill="#ccfbf1" stroke="#0f766e" stroke-width="2"/>
@@ -193,11 +202,11 @@
       }
     },
     lfSection: {
-      title: "LF-Vertiefung: Kondensationsreaktion & Abgrenzung zu Proteinen",
+      title: "LF-Vertiefung: Kondensationsreaktion & Abgrenzung zu Peptiden/Proteinen",
       blocks: [
         {
           heading: "Kondensation unter Abbau des Aminosäuregerüsts",
-          html: "<p class=\"chem-eq\">2 Ninhydrin + α-Aminosäure → Ruhemanns Purpur + CO<sub>2</sub>↑ + R–CHO + 3 H<sub>2</sub>O</p><ul><li>Nur das <strong>Stickstoffatom</strong> der ursprünglichen α-Aminogruppe wird als Brücke zwischen beiden Ninhydrin-Molekülen eingebaut.</li><li>Die Carboxygruppe entweicht durch <strong>Decarboxylierung</strong> als CO<sub>2</sub>, der Rest verlässt die Reaktion als Aldehyd (R–CHO) unter Abspaltung von H<sub>2</sub>O.</li><li><strong>Warum bleibt Protein (Albumin) negativ?</strong> Im Makromolekül sind fast alle Aminogruppen als stabile Peptidbindungen (–CO–NH–) gebunden; dem einzigen N-Terminus fehlt die freie α-Carboxygruppe zur Decarboxylierung, und bei 80 °C koaguliert das Protein.</li></ul>"
+          html: "<p class=\"chem-eq\">2 Ninhydrin + α-Aminosäure → Ruhemanns Purpur + CO<sub>2</sub>↑ + R–CHO + 3 H<sub>2</sub>O</p><ul><li>Nur das <strong>Stickstoffatom</strong> der ursprünglichen α-Aminogruppe wird als Brücke zwischen beiden Ninhydrin-Molekülen eingebaut.</li><li>Die Carboxygruppe entweicht durch <strong>Decarboxylierung</strong> als CO<sub>2</sub>, der Rest verlässt die Reaktion als Aldehyd (R–CHO) unter Abspaltung von H<sub>2</sub>O.</li><li><strong>Warum bleiben Peptide, Polypeptide und Proteine negativ?</strong> Im Peptid- bzw. Proteinrückgrat sind fast alle Aminogruppen als stabile Peptidbindungen (–CO–NH–) gebunden. Selbst am freien N-Terminus – auch bei kurzen Peptiden (z. B. Dipeptiden) oder angesäuerter Molke – fehlt die freie α-Carboxygruppe am selben C-Atom für die Decarboxylierung zu Ruhemanns Purpur; Proteine koagulieren zudem bei 80 °C. Erst eine Hydrolyse zu freien α-Aminosäuren macht den Nachweis positiv.</li></ul>"
         }
       ]
     }

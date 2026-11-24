@@ -23,25 +23,35 @@ test("registers Ninhydrin and Biuret under Proteine", () => {
   assert.ok(db.experiments.every((e) => e.category === "Proteine"));
 });
 
-test("Ninhydrin detects free amino acids/short peptides and stays negative for proteins (Albumin)", () => {
+test("Ninhydrin detects only free α-amino acids (Glycin) and stays negative for Dipeptid, Protein, and Wasser", () => {
   const db = loadProteinModule();
   const nin = db.experiments.find((e) => e.id === "ninhydrin-nachweis");
   assert.equal(nin.labConfig.supportsHeating, true);
   assert.equal(nin.labConfig.getOutcome("glycin", { reagentAdded: false, heated: true }).statusBadge, "pending-reagent");
 
-  for (const pos of ["glycin", "dipeptid"]) {
-    assert.equal(nin.labConfig.getOutcome(pos, { reagentAdded: true, heated: false }).statusBadge, "pending-heat");
-    const hot = nin.labConfig.getOutcome(pos, { reagentAdded: true, heated: true });
-    assert.equal(hot.statusBadge, "positive");
-    assert.ok(hot.liquidColor);
+  assert.equal(nin.labConfig.getOutcome("glycin", { reagentAdded: true, heated: false }).statusBadge, "pending-heat");
+  const hotGly = nin.labConfig.getOutcome("glycin", { reagentAdded: true, heated: true });
+  assert.equal(hotGly.statusBadge, "positive");
+  assert.equal(hotGly.liquidColor, "#4a247a");
+
+  for (const neg of ["dipeptid", "protein", "wasser"]) {
+    assert.equal(nin.labConfig.getOutcome(neg, { reagentAdded: true, heated: false }).statusBadge, "pending-heat");
+    const hotNeg = nin.labConfig.getOutcome(neg, { reagentAdded: true, heated: true });
+    assert.equal(hotNeg.statusBadge, "negative");
   }
-  assert.equal(nin.labConfig.getOutcome("glycin", { reagentAdded: true, heated: true }).liquidColor, "#4a247a");
-  assert.equal(nin.labConfig.getOutcome("protein", { reagentAdded: true, heated: true }).statusBadge, "negative");
-  assert.equal(nin.labConfig.getOutcome("wasser", { reagentAdded: true, heated: true }).statusBadge, "negative");
+
   assert.match(nin.lfSection.blocks.map((b) => b.html).join(" "), /Ruhemanns Purpur/i);
   assert.match(nin.lfSection.blocks.map((b) => b.html).join(" "), /CO<sub>2<\/sub>/i);
   assert.match(nin.lfSection.blocks.map((b) => b.html).join(" "), /Decarboxylierung/i);
-  assert.match(nin.particleModel.renderSvg("glycin", { reagentAdded: true, heated: true, outcome: nin.labConfig.getOutcome("glycin", { reagentAdded: true, heated: true }) }), /<svg[^>]*>/);
+  assert.match(nin.particleModel.renderSvg("glycin", { reagentAdded: true, heated: true, outcome: hotGly }), /<svg[^>]*>/);
+  const dipeptidSvg = nin.particleModel.renderSvg("dipeptid", {
+    reagentAdded: true,
+    heated: true,
+    outcome: nin.labConfig.getOutcome("dipeptid", { reagentAdded: true, heated: true })
+  });
+  assert.match(dipeptidSvg, /<svg[^>]*>/);
+  assert.match(dipeptidSvg, /blockiert/i);
+  assert.match(dipeptidSvg, /kein Ruhemanns Purpur/i);
   assert.match(nin.particleModel.renderSvg("protein", { reagentAdded: true, heated: true, outcome: nin.labConfig.getOutcome("protein", { reagentAdded: true, heated: true }) }), /<svg[^>]*>/);
 });
 
